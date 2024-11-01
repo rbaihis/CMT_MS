@@ -1,9 +1,0 @@
-customer: 192.168.43.236:8091
-product&product-purchase: 192.168.43.236:8050
-order&order-line: 192.168.43.236:8070
-payment: 192.168.43.236:8060
-notification: 192.168.43.236:8040
-gateway: 192.168.43.236:8222
-config: 192.168.43.236:8888
-eureka: 192.168.43.236:8761
-
