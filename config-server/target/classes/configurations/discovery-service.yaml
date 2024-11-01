@@ -1,0 +1,43 @@
+# other configs are inherited from ./application.yaml
+
+
+# Configuration for discovery
+server:
+  port: 8761
+
+eureka:
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+
+
+#tracing config for zipkin
+management:
+  endpoint:
+    #    refresh:
+    #      enabled: true
+    caches:
+      cache:
+        time-to-live: 3s
+    #-------management-prometheus-config ------------------
+    health:
+      show-details: always
+      enabled: true
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true
+  metrics:
+    tags:
+      application: discovery-service
+  endpoints:
+    enabled-by-default: true
+    web:
+      exposure:
+        include: [ "prometheus" ]
+      base-path: /actuator
+  #      path-mapping:
+  #        prometheus: prometheus
+  #-------management-tracing config ------------------
+#---------------------------------------------------------
+

@@ -1,0 +1,68 @@
+server:
+  port: 8060
+  servlet:
+    context-path: /api/v1
+
+notification-service:
+  message:
+    destination: payment-topic
+
+management:
+  metrics:
+    tags:
+      application: payment-service
+
+spring:
+  application:
+    name: payment-service
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://192.168.43.10:5432/payment
+    username: seif
+    password: seif
+  jpa:
+    hibernate:
+      ddl-auto: create
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+  kafka:
+    bootstrap-servers: 192.168.43.10:9092
+    producer:
+      compression-type: snappy # optional if u want to compress
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      #          transaction-id-prefix: payment-  # Prefix for the transactional ID, used to group messages into transactions
+      acks: all # Ensures that all in-sync replicas acknowledge the message(providing high durability,increases latency),use ack=1 if kafka is reliable and low latency needed(medium consistency-fail can occur if the ack-replica fails ) , 0 if u don't care about acks (consistency risked), all--> add some latency since requires all replicas to acks it .
+      retries: 10 # Number of times to retry sending a message in case of failures
+      batch-size: 16384 # Size of a batch of messages to send; helps with throughput but may affect latency
+        # batch-size best practice:
+        # must be smaller than buffer-memory to avoid excessive memory usage .
+        # how should the size be:
+        #  Based on the average size of a group of messages (batch) and expected throughput.
+        # (message is too large):
+        # should consider host instance , before even calculating , monitor then decide
+        # (regular-class-data-json ): [still should consider the ram of host instance ]
+        # (low-medium throughput) batch-size fine between  [1/20 - 1/200] of buffer-size
+        # (high-concurrency and throughput) batch-size should be at least 1/1024 of buffer-size
+      # (reactive and high-throughput) batch-size should be at least 1/5000
+      buffer-memory: 33554432 # Amount of memory available to buffer messages before sending them; helps manage memory usage
+        #risk about buffer-memory full:
+        # sending messages at a high-rate then it can be processed : (sent and acknowledged by the Kafka broker)
+        # Network Latency or Broker Issues : the messages can accumulate in the buffer.
+        # Large Message Sizes - buffer-size is small : might fill up the buffer more quickly
+        # ===> buffer-FULL
+        # ==> exceptions
+        # ==> Backpressure(blocking message production until there is enough space)
+      # ==> Crashes ||  producer-becoming-unresponsive
+      properties:
+        interceptor.classes: tn.seif.ecommerce.config.external.KafkaProducerInterceptor
+        spring.json.type.mapping: paymentConfirmation:tn.seif.ecommerce.payment.dto.PaymentConfirmation
+        enable-idempotence: true # Ensures that messages are not sent more than once
+        retry.backoff.ms: 300  # Time to wait before retrying in milliseconds
+        linger.ms: 100 # Wait up to 5 ms to collect messages into a batch before sending
+        request.timeout.ms: 1000 # request time out
+        #delivery.timeout.ms >=( linger.ms + request.timeout.mss )
+        delivery.timeout.ms: 4500  # Total time to wait for the message to be sent, including retries;  if not sent in this time, it will fail
+        #transaction.timeout.ms: 60000   # Timeout for transactions; includes the time from starting the transaction to committing or aborting it
+

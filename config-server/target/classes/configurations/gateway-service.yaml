@@ -1,0 +1,60 @@
+server:
+  port: 8222
+
+management:
+  metrics:
+    tags:
+      application: gw-service
+
+spring:
+  cloud:
+    gateway:
+#      httpclient:
+#        headers:
+#          add:
+#            X-B3-TraceId: true
+#            X-B3-SpanId: true
+#            X-B3-ParentSpanId: true
+#            X-B3-Sampled: true
+#            X-B3-Flags: true
+
+      discovery:
+        locator:
+          enabled: true
+
+      #   do the routes defining  'lb' for load balancing by defining the id uri and predicate
+      routes:
+        - id: product-service
+          uri: lb:http://PRODUCT-SERVICE
+          predicates:
+            - Path=/api/v1/product/**
+#          filters:
+            # custom RequestHeader-filter to add correlation ids if not existing and pass idempotencyKey
+#            - name: CorrelationIdAndIdempotencyKeyFilter
+        - id: customer-service
+          uri: lb:http://CUSTOMER-SERVICE
+          predicates:
+            - Path=/api/v1/customer/**
+#          filters:
+            # custom RequestHeader-filter  to add correlation ids if not existing and pass idempotencyKey
+#            - name: CorrelationIdAndIdempotencyKeyFilter
+        - id: order-service
+          uri: lb:http://ORDER-SERVICE
+          predicates:
+            - Path=/api/v1/order/**
+#          filters:
+            # custom RequestHeader-filter  to add correlation ids if not existing and pass idempotencyKey
+#            - name: CorrelationIdAndIdempotencyKeyFilter
+        - id: order-line-service
+          uri: lb:http://ORDER-SERVICE
+          predicates:
+            - Path=/api/v1/order-line/**
+#          filters:
+            # custom RequestHeader-filter  to add correlation ids if not existing and pass idempotencyKey
+#            - name: CorrelationIdAndIdempotencyKeyFilter
+        - id: payment-service
+          uri: lb:http://PAYMENT-SERVICE
+          predicates:
+            - Path=/api/v1/payment/**
+
+

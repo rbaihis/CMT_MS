@@ -1,0 +1,73 @@
+# this file is used as super class for common config
+# used to factor configurations
+
+eureka-hostname: localhost
+eureka-server: http://localhost:8761/eureka
+
+logging:
+  pattern:
+    #    console: "%d{yyyy-MM-dd HH:mm:ss} [%X{correlationId}] [%thread] %-5level %logger{36} - %msg%n"
+    #    file: "%d{yyyy-MM-dd HH:mm:ss} [%X{correlationId}] [%thread] %-5level %logger{36} - %msg%n"
+    correlation: "[%X{correlationId}] [%X{traceId}] "
+
+eureka:
+  instance:
+    hostname: ${eureka-hostname}
+  client:
+    service-url:
+      defaultZone: ${eureka-server}
+
+spring:
+  cloud:
+    config:
+      # used to not override if some properties of spring cloud are defined on the app itself is cloud configuration
+      override-system-properties: false
+
+
+#tracing config for zipkin
+management:
+  endpoint:
+    #    refresh:
+    #      enabled: true
+    caches:
+      cache:
+        time-to-live: 3s
+#-------management-prometheus-config ------------------
+    health:
+      show-details: always
+      enabled: true
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true
+  metrics:
+    tags:
+      application: transfer-service
+  endpoints:
+    enabled-by-default: true
+    web:
+      exposure:
+        include: [ "prometheus" ]
+      base-path: /actuator
+  #      path-mapping:
+  #        prometheus: prometheus
+#-------management-tracing config ------------------
+  tracing:
+    sampling:
+      probability: 1.0
+  zipkin:
+    tracing:
+      endpoint: http://192.168.43.10:9411/api/v2/spans
+#---------------------------------------------------------
+
+
+
+#api paths
+application:
+  config:
+    customer-url: http://localhost:8222/api/v1/customer
+    payment-url: http://localhost:8222/api/v1/payment
+    product-url: http://localhost:8222/api/v1/product
+    category-url: http://localhost:8222/api/v1/product/category
+    order-url: http://localhost:8222/api/v1/order
+    orderline-url: http://localhost:8222/api/v1/orderline
