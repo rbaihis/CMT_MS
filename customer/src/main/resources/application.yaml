@@ -3,6 +3,6 @@ url-config-server: http://localhost:8888
 spring:
   application:
     name: customer-service
-  config:
-    import: optional:configserver:${url-config-server}
+  # config:
+  #   import: optional:configserver:${url-config-server}
 
