@@ -1,0 +1,264 @@
+version: "3"
+services:
+
+  #------------   GW-SERVICE -------------------------
+  cmt-gateway-service:
+    container_name: cmt-gateway-service
+    image: rbaihis/cmt-gateway-service:1.0.0
+    env_file:
+      - ./cmt-ms-common
+      - ./cmt-ms-gateway
+    ports:
+      - 8222:8222
+    restart: always
+    labels:
+      # Add any specific labels needed here, such as Prometheus monitoring labels
+      # Example:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "8222"
+    
+
+  #------------   CUSTOMER-SERVICE -------------------------
+  cmt-customer-service:
+    container_name: cmt-customer-service
+    image: rbaihis/cmt-customer-service:1.0.0
+    env_file:
+      - ./cmt-ms-common
+      - ./cmt-ms-customer
+      - ./cmt-ms-login-mongodb
+    ports:
+      - 8055:8055
+    restart: always
+    labels:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "8055"
+    depends_on:
+      - mongodb-service
+
+  #------------   PRODUCT-SERVICE -------------------------
+  cmt-product-service:
+    container_name: cmt-product-service
+    image: rbaihis/cmt-product-service:1.0.0
+    env_file:
+      - ./cmt-ms-common
+      - ./cmt-ms-product
+      - ./cmt-ms-login-postgres
+    ports:
+      - 8050:8050
+    restart: always
+    labels:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "8050"
+    depends_on:
+      - postgres-service
+      - kafka-service
+      - redis-service
+
+  #------------   ORDER-SERVICE -------------------------
+  cmt-order-service:
+    container_name: cmt-order-service
+    image: rbaihis/cmt-order-service:1.0.0
+    env_file:
+      - ./cmt-ms-common
+      - ./cmt-ms-order
+      - ./cmt-ms-login-postgres
+    ports:
+      - 8065:8065
+    restart: always
+    labels:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "8065"
+    depends_on:
+      - postgres-service
+      - kafka-service
+      - redis-service
+    
+
+  #------------   PAYMENT-SERVICE -------------------------
+  cmt-payment-service:
+    container_name: cmt-payment-service
+    image: rbaihis/cmt-payment-service:1.0.0
+    env_file:
+      - ./cmt-ms-common
+      - ./cmt-ms-payment
+      - ./cmt-ms-login-postgres
+    ports:
+      - 8060:8060
+    restart: always
+    labels:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "8060"
+    depends_on:
+      - postgres-service
+      - kafka-service
+      - redis-service
+
+  #------------   NOTIFICATION-SERVICE -------------------------
+  cmt-notification-service:
+    container_name: cmt-notification-service
+    image: rbaihis/cmt-notification-service:1.0.0
+    env_file:
+      - ./cmt-ms-common
+      - ./cmt-ms-notification
+      - ./cmt-ms-login-postgres
+    ports:
+      - 8045:8045
+    restart: always
+    labels:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "8045"
+    depends_on:
+      - postgres-service
+      - kafka-service
+      - redis-service
+      - mail-service
+
+  #-----------------------tracing--------------------------------
+  zipkin-service:
+    container_name: zipkin-service
+    image: openzipkin/zipkin
+    ports:
+      - "9411:9411"
+    restart: always
+    labels:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "9411"
+
+  #---postgres---
+  postgres-service:
+    container_name: postgres-service
+    image: postgres
+    env_file:
+      - ./cmt-postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U seif -d postgres"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - postgres:/data/postgres
+    ports:
+      - "5432:5432"
+    restart: always
+
+
+  postgres-exporter:
+    container_name: postgres-exporter
+    image: bitnami/postgres-exporter:latest
+    env_file:
+      - ./cmt-postgres-exporter
+    ports:
+      - "9187:9187"
+    depends_on:
+      - postgres-service
+    restart: always
+
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4
+    env_file:
+      - ./cmt-postgres-pgadmin
+    ports:
+      - "5050:80"
+    restart: always
+
+  #------mongoDB
+  mongodb-service:
+    image: mongo
+    container_name: mongo_db
+    ports:
+      - 27017:27017
+    volumes:
+      - mongo:/data/db
+    env_file:
+      - ./cmt-mongodb
+    restart: always
+
+  mongo-express:
+    image: mongo-express
+    container_name: mongo_express
+    ports:
+      - 8081:8081
+    env_file:
+      - ./cmt-mongo-express
+    depends_on:
+      - mongodb-service
+    restart: always
+
+  #----Redis-------
+  redis-service:
+    container_name: redis-service
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "--appendonly", "yes", "--save", "900 1", "--save", "300 10", "--save", "60 10000"]
+    volumes:
+      - redis_data:/data
+    restart: always
+
+  #-----------------Messaging services-------------------------------------
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: zookeeper
+    env_file:
+      - ./cmt-zookeeper
+    volumes:
+      - zookeeper-data:/var/lib/zookeeper
+    ports:
+      - "2181:2181"
+    restart: always
+
+  kafka-service:
+    container_name: kafka-service
+    image: confluentinc/cp-kafka:7.5.0
+    env_file:
+      - ./cmt-kafka
+    volumes:
+      - kafka-data:/var/lib/kafka
+    ports:
+      - "9092:9092"
+    depends_on:
+      - zookeeper
+    restart: always
+
+  kafdrop:
+    image: obsidiandynamics/kafdrop
+    container_name: kafdrop
+    ports:
+      - "9010:9010"
+    env_file:
+      - ./cmt-kafkadrop
+    restart: always
+
+  #-----------------Email-Similators------------------------------------------
+  mail-service:
+    image: mailhog/mailhog:latest
+    container_name: mailhog
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    restart: always
+
+  #----------auth-keyclock---------------------------------------
+  keycloak-service:
+    container_name: keycloak-service
+    image: quay.io/keycloak/keycloak:25.0.6
+    ports:
+      - 9098:8080
+    env_file:
+      - ./cmt-keycloack
+    command:
+      - "start-dev"
+
+#-------------------------------------------------------------------------
+
+volumes:
+  postgres:
+  pgadmin:
+  mongo:
+  kafka:
+  redis_data:
+  zookeeper-data:
+  kafka-data:
+  sonarqube_data:
+  sonarqube_extensions:

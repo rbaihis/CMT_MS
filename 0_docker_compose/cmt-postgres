@@ -1,0 +1,5 @@
+      POSTGRES_USER=seif
+      POSTGRES_PASSWORD=seif
+      PGDATA=/data/postgres
+      TZ=Africa/Tunis
+      POSTGRES_DB=postgres
