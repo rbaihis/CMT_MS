@@ -1,0 +1,164 @@
+services:
+
+  #------------   GW-SERVICE -------------------------
+  cmt-gateway-service:
+    container_name: cmt-gateway-service
+    image: rbaihis/gateway-service:1.0.0
+    environment:
+      POSTGRES_USER: ${DB_USER}
+    env_file:
+      - path: ./cmt-ms-common-conf
+      - path: ./cmt-ms-gateway-conf
+    ports:
+      - 8222:8222
+    networks:
+      - microservices-net
+    restart: unless-stopped
+#    volumes:
+#      - postgres:/data/postgres
+#    depends_on:
+#      - customer-service
+#    command: [ "redis-server", "--appendonly", "yes", "--save", "900 1", "--save", "300 10", "--save", "60 10000" ]
+#    healthcheck:
+#      test: ["CMD-SHELL", "pg_isready  -U ${DB_USER}"]
+#      interval: 30s
+#      timeout: 5s
+#      retries: 5
+
+
+  #------------   CUSTOMER-SERVICE -------------------------
+  cmt-customer-service:
+    container_name: cmt-customer-service
+    image: rbaihis/customer-service:1.0.0
+    environment:
+      POSTGRES_USER: ${DB_USER}
+    env_file:
+      - path: ./cmt-ms-common-conf
+      - path: ./cmt-ms-customer-conf
+    ports:
+      - 8055:8055
+    networks:
+      - microservices-net
+    restart: unless-stopped
+  #  volumes:
+  #    - postgres:/data/postgres
+  #  depends_on:
+  #    - customer-service
+  #  command: [ "redis-server", "--appendonly", "yes", "--save", "900 1", "--save", "300 10", "--save", "60 10000" ]
+  #  healthcheck:
+  #    test: ["CMD-SHELL", "pg_isready  -U ${DB_USER}"]
+  #    interval: 30s
+  #    timeout: 5s
+  #    retries: 5
+
+
+  #------------   PRODUCT-SERVICE -------------------------
+  cmt-product-service:
+    container_name: cmt-product-service
+    image: rbaihis/product-service:1.0.0
+    environment:
+      POSTGRES_USER: ${DB_USER}
+    env_file:
+      - path: ./cmt-ms-common-conf
+      - path: ./cmt-ms-product-conf
+    ports:
+      - 8050:8050
+    networks:
+      - microservices-net
+    restart: unless-stopped
+#  volumes:
+#    - postgres:/data/postgres
+#    depends_on:
+#      - mongodb
+#    command: [ "redis-server", "--appendonly", "yes", "--save", "900 1", "--save", "300 10", "--save", "60 10000" ]
+#    healthcheck:
+#      test: ["CMD-SHELL", "pg_isready  -U ${DB_USER}"]
+#      interval: 30s
+#      timeout: 5s
+#      retries: 5
+
+
+  #------------   ORDER-SERVICE -------------------------
+  cmt-order-service:
+    container_name: cmt-order-service
+    image: rbaihis/order-service:1.0.0
+    environment:
+      POSTGRES_USER: ${DB_USER}
+    env_file:
+      - path: ./cmt-ms-common-conf
+      - path: ./cmt-ms-order-conf
+    ports:
+      - 8065:8065
+    networks:
+      - microservices-net
+    restart: unless-stopped
+#    volumes:
+#      - postgres:/data/postgres
+#    depends_on:
+#      - mongodb
+#    command: [ "command-name", "--flagsOrWhatever", "valToPassToFlag", "+infinity_same_style" ]
+#    healthcheck:
+#      test: ["CMD-SHELL", "pg_isready  -U ${DB_USER}"]
+#      interval: 30s
+#      timeout: 5s
+#      retries: 5
+
+
+  #------------   PAYMENT-SERVICE -------------------------
+  cmt-payment-service:
+    container_name: cmt-payment-service
+    image: rbaihis/payment-service:1.0.0
+    environment:
+      POSTGRES_USER: ${DB_USER}
+    env_file:
+      - path: ./cmt-ms-common-conf
+      - path: ./cmt-ms-payment-conf
+    ports:
+      - 8060:8060
+    networks:
+      - microservices-net
+    restart: unless-stopped
+#    depends_on:
+#      - mongodb
+#    command: [ "command-name", "--flagsOrWhatever", "valToPassToFlag", "+infinity_same_style" ]
+#    healthcheck:
+#      test: ["CMD-SHELL", "pg_isready  -U ${DB_USER}"]
+#      interval: 30s
+#      timeout: 5s
+#      retries: 5
+
+
+#------------   NOTIFICATION-SERVICE -------------------------
+  cmt-notification-service:
+    container_name: cmt-notification-service
+    image: rbaihis/notification-service:1.0.0
+    environment:
+      POSTGRES_USER: ${DB_USER}
+    env_file:
+      - path: ./cmt-ms-common-conf
+      - path: ./cmt-ms-notification-conf
+    ports:
+      - 8045:8045
+    networks:
+      - microservices-net
+    restart: unless-stopped
+#    volumes:
+#      - postgres:/data/postgres
+#    command: [ "command-name", "--flagsOrWhatever", "valToPassToFlag", "+infinity_same_style" ]
+#    healthcheck:
+#      test: ["CMD-SHELL", "pg_isready  -U ${DB_USER}"]
+#      interval: 30s
+#      timeout: 5s
+#      retries: 5
+
+
+
+#-----db & networks------------------------
+networks:
+  microservices-net:
+    driver: bridge
+#volumes:
+#  cmt-product:
+
+
+

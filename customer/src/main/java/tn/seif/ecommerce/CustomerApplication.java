@@ -1,0 +1,14 @@
+package tn.seif.ecommerce;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.actuate.autoconfigure.tracing.ConditionalOnEnabledTracing;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class CustomerApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(CustomerApplication.class, args);
+	}
+
+}
