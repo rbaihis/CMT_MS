@@ -8,6 +8,8 @@ metadata:
     app.kubernetes.io/part-of: cmt-solution
   labels:
     service: cmt-order-service
+    app: cmt-order-service
+    job: cmt-order
   name: cmt-order-service
   namespace: cmt-solution
 spec:
