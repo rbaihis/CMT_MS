@@ -1,0 +1,261 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  annotations:
+    app.kubernetes.io/component: infra-eventstreaming
+    app.kubernetes.io/instance: cmt-kafka
+    app.kubernetes.io/managed-by: kubectl
+    app.kubernetes.io/name: cmt-kafka
+    app.kubernetes.io/part-of: cmt-solution
+    app.kubernetes.io/version: 7.5.0
+  labels:
+    service: kafka-service
+  name: kafka-service
+  namespace: cmt-solution
+spec:
+  persistentVolumeClaimRetentionPolicy:
+    whenDeleted: Retain
+    whenScaled: Retain
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      service: kafka-service
+  serviceName: ""
+  template:
+    metadata:
+      labels:
+        service: kafka-service
+    spec:
+      containers:
+      - envFrom:
+        - configMapRef:
+            name: cmt-kafka
+        image: confluentinc/cp-kafka:7.5.0
+        imagePullPolicy: IfNotPresent
+        name: kafka-service
+        ports:
+        - containerPort: 9092
+          protocol: TCP
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 10
+  updateStrategy:
+    rollingUpdate:
+      partition: 0
+    type: RollingUpdate
+
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  annotations:
+    app.kubernetes.io/component: infra-nosqlbd
+    app.kubernetes.io/instance: cmt-mongodb
+    app.kubernetes.io/managed-by: kubectl
+    app.kubernetes.io/name: cmt-mongodb
+    app.kubernetes.io/part-of: cmt-solution
+    app.kubernetes.io/version: latest
+  labels:
+    service: mongodb-service
+  name: mongodb-service
+  namespace: cmt-solution
+spec:
+  persistentVolumeClaimRetentionPolicy:
+    whenDeleted: Retain
+    whenScaled: Retain
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      service: mongodb-service
+  serviceName: ""
+  template:
+    metadata:
+      labels:
+        service: mongodb-service
+    spec:
+      containers:
+      - envFrom:
+        - configMapRef:
+            name: cmt-mongodb
+        image: mongo
+        imagePullPolicy: Always
+        name: mongo-db
+        ports:
+        - containerPort: 27017
+          protocol: TCP
+        resources: {}
+      terminationGracePeriodSeconds: 7
+  updateStrategy:
+    rollingUpdate:
+      partition: 0
+    type: RollingUpdate
+
+
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  annotations:
+    app.kubernetes.io/component: infra-sqldb
+    app.kubernetes.io/instance: cmt-postgres
+    app.kubernetes.io/managed-by: kubectl
+    app.kubernetes.io/name: cmt-postgres
+    app.kubernetes.io/part-of: cmt-solution
+    app.kubernetes.io/version: latest
+  labels:
+    service: postgres-service
+  name: postgres-service
+  namespace: cmt-solution
+spec:
+  persistentVolumeClaimRetentionPolicy:
+    whenDeleted: Retain
+    whenScaled: Retain
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      service: postgres-service
+  serviceName: ""
+  template:
+    metadata:
+      labels:
+        service: postgres-service
+    spec:
+      containers:
+      - envFrom:
+        - configMapRef:
+            name: cmt-postgres
+        image: postgres
+        imagePullPolicy: Always
+        livenessProbe:
+          exec:
+            command:
+            - pg_isready -U seif -d postgres
+          failureThreshold: 5
+          periodSeconds: 7
+          successThreshold: 1
+          timeoutSeconds: 5
+        name: postgres-service
+        ports:
+        - containerPort: 5432
+          protocol: TCP
+        resources: {}
+      terminationGracePeriodSeconds: 7
+  updateStrategy:
+    rollingUpdate:
+      partition: 0
+    type: RollingUpdate
+
+
+
+
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  annotations:
+    app.kubernetes.io/component: infra-inmemorydb
+    app.kubernetes.io/instance: cmt-redis
+    app.kubernetes.io/managed-by: kubectl
+    app.kubernetes.io/name: cmt-redis
+    app.kubernetes.io/part-of: cmt-solution
+    app.kubernetes.io/version: latest
+  labels:
+    service: redis-service
+  name: redis-service
+  namespace: cmt-solution
+spec:
+  persistentVolumeClaimRetentionPolicy:
+    whenDeleted: Retain
+    whenScaled: Retain
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      service: redis-service
+  serviceName: ""
+  template:
+    metadata:
+      labels:
+        service: redis-service
+    spec:
+      containers:
+      - args:
+        - redis-server
+        - --appendonly
+        - "yes"
+        - --save
+        - 900 1
+        - --save
+        - 70 10
+        - --save
+        - 60 10000
+        image: redis:latest
+        imagePullPolicy: Always
+        name: redis-service
+        ports:
+        - containerPort: 6379
+          protocol: TCP
+        resources: {}
+      terminationGracePeriodSeconds: 7
+  updateStrategy:
+    rollingUpdate:
+      partition: 0
+    type: RollingUpdate
+
+
+
+
+
+    
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  annotations:
+    app.kubernetes.io/component: infra-kafka-serviceregistry
+    app.kubernetes.io/instance: cmt-zookeeper
+    app.kubernetes.io/managed-by: kubectl
+    app.kubernetes.io/name: cmt-zookeeper
+    app.kubernetes.io/part-of: cmt-solution
+    app.kubernetes.io/version: latest
+  labels:
+    service: zookeeper
+  name: zookeeper
+  namespace: cmt-solution
+spec:
+  persistentVolumeClaimRetentionPolicy:
+    whenDeleted: Retain
+    whenScaled: Retain
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      service: zookeeper
+  serviceName: ""
+  template:
+    metadata:
+      labels:
+        service: zookeeper
+    spec:
+      containers:
+      - envFrom:
+        - configMapRef:
+            name: cmt-zookeeper
+        image: confluentinc/cp-zookeeper:7.5.0
+        imagePullPolicy: IfNotPresent
+        name: zookeeper
+        ports:
+        - containerPort: 2181
+          protocol: TCP
+        resources: {}
+      terminationGracePeriodSeconds: 7
+  updateStrategy:
+    rollingUpdate:
+      partition: 0
+    type: RollingUpdate
