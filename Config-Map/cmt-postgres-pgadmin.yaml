@@ -1,0 +1,11 @@
+apiVersion: v1
+data:
+  PGADMIN_CONFIG_SERVER_MODE: "False"
+  PGADMIN_DEFAULT_EMAIL: rabbehseif@gmail.com
+  PGADMIN_DEFAULT_PASSWORD: seif
+kind: ConfigMap
+metadata:
+  labels:
+    service: pgadmin-pgadmin-cmt
+  name: cmt-postgres-pgadmin
+  namespace: cmt-solution

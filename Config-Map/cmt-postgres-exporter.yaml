@@ -1,0 +1,10 @@
+apiVersion: v1
+data:
+  DATA_SOURCE_NAME: postgresql://seif:$seif@postgres-service.cmt-solution.svc.cluster.local:5432/postgres?sslmode=disable"
+  POSTGRES_EXPORTER_WEB_LISTEN_ADDRESS: 0.0.0.0:9187
+kind: ConfigMap
+metadata:
+  labels:
+    service: postgres-exporter-cmt
+  name: cmt-postgres-exporter
+  namespace: cmt-solution

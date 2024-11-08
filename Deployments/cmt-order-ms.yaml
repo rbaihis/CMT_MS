@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+  metadata:
+    annotations:
+      app.kubernetes.io/component: ms
+      app.kubernetes.io/instance: cmt-order-ms
+      app.kubernetes.io/managed-by: kubectl
+      app.kubernetes.io/name: cmt-order-ms
+      app.kubernetes.io/part-of: cmt-solution
+      app.kubernetes.io/version: 1.0.0
+    labels:
+      service: cmt-order-service
+    name: cmt-order-service
+    namespace: cmt-solution
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        service: cmt-order-ms
+    strategy:
+      rollingUpdate:
+        maxSurge: 25%
+        maxUnavailable: 25%
+      type: RollingUpdate
+    template:
+      metadata:
+        annotations:
+          prometheus.io/path: /api/v1/actuator/prometheus
+          prometheus.io/port: "8065"
+          prometheus.io/scrape: "true"
+        creationTimestamp: null
+        labels:
+          service: cmt-order-ms
+      spec:
+        containers:
+        - envFrom:
+          - configMapRef:
+              name: cmt-ms-common
+          - configMapRef:
+              name: cmt-ms-order
+          - configMapRef:
+              name: cmt-ms-login-postgres
+          image: rbaihis/cmt-order-service:1.0.0
+          imagePullPolicy: IfNotPresent
+          name: cmt-order-ms
+          ports:
+          - containerPort: 8065
+            protocol: TCP

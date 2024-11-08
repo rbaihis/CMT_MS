@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    app.kubernetes.io/component: ms
+    app.kubernetes.io/instance: cmt-customer-ms
+    app.kubernetes.io/managed-by: kubectl
+    app.kubernetes.io/name: cmt-customer-ms
+    app.kubernetes.io/part-of: cmt-solution
+    app.kubernetes.io/version: 1.0.0
+    deployment.kubernetes.io/revision: "1"
+  generation: 3
+  labels:
+    service: cmt-customer-service
+  name: cmt-customer-service
+  namespace: cmt-solution
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service: cmt-customer-ms
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        prometheus.io/path: /api/v1/actuator/prometheus
+        prometheus.io/port: "8055"
+        prometheus.io/scrape: "true"
+      creationTimestamp: null
+      labels:
+        service: cmt-customer-ms
+    spec:
+      containers:
+      - envFrom:
+        - configMapRef:
+            name: cmt-ms-common
+        - configMapRef:
+            name: cmt-ms-customer
+        - configMapRef:
+            name: cmt-ms-login-mongodb
+        image: rbaihis/cmt-customer-service:1.0.0
+        imagePullPolicy: IfNotPresent
+        name: cmt-customer-ms
+        ports:
+        - containerPort: 8055
+          protocol: TCP
