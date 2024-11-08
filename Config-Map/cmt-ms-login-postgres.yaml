@@ -1,0 +1,31 @@
+apiVersion: v1
+data:
+  SPRING_DATA_MONGODB_AUTHENTICATION_DATABASE: admin
+  SPRING_DATA_MONGODB_HOST: mongodb-service.cmt-solution.svc.cluster.local
+  SPRING_DATA_MONGODB_PASSWORD: seif
+  SPRING_DATA_MONGODB_PORT: "27017"
+  SPRING_DATA_MONGODB_USERNAME: seif
+kind: ConfigMap
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"v1","data":{"SPRING_DATA_MONGODB_AUTHENTICATION_DATABASE":"admin","SPRING_DATA_MONGODB_HOST":"mongodb-service.cmt-solution.svc.cluster.local","SPRING_DATA_MONGODB_PASSWORD":"seif","SPRING_DATA_MONGODB_PORT":"27017","SPRING_DATA_MONGODB_USERNAME":"seif"},"kind":"ConfigMap","metadata":{"annotations":{},"creationTimestamp":null,"labels":{"service":"cmt-ms-login-mongodb"},"name":"cmt-ms-login-mongodb","namespace":"cmt-solution"}}
+  creationTimestamp: "2024-11-04T01:37:43Z"
+  labels:
+    service: cmt-ms-login-mongodb
+  name: cmt-ms-login-mongodb
+  namespace: cmt-solution
+  resourceVersion: "993557"
+  uid: e55332d2-26dd-475f-99ce-f012ed56bbbc
+apiVersion: v1
+data:
+  SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
+  SPRING_DATASOURCE_PASSWORD: seif
+  SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-service.cmt-solution.svc.cluster.local:5432/orderdb
+  SPRING_DATASOURCE_USERNAME: seif
+kind: ConfigMap
+metadata:
+  labels:
+    service: cmt-ms-login-postgres
+  name: cmt-ms-login-postgres
+  namespace: cmt-solution

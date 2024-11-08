@@ -1,0 +1,12 @@
+apiVersion: v1
+data:
+  PGDATA: /data/postgres
+  POSTGRES_DB: postgres
+  POSTGRES_PASSWORD: seif
+  POSTGRES_USER: seif
+  TZ: Africa/Tunis
+kind: ConfigMap
+metadata:
+  labels:
+    service: postgres-service-cmt
+  name: cmt-postgres

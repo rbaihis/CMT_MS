@@ -8,6 +8,8 @@ metadata:
     app.kubernetes.io/part-of: cmt-solution
   labels:
     service: cmt-gateway-service
+    job: svc-gateway
+    app: cmt-gateway-service
   name: cmt-gateway-service
   namespace: cmt-solution
 spec:

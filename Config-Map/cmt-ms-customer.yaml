@@ -1,0 +1,18 @@
+apiVersion: v1
+data:
+  MANAGEMENT_METRICS_TAGS_APPLICATION: customer-service
+  SERVER_PORT: "8055"
+  SERVER_SERVLET_CONTEXT_PATH: /api/v1
+  SPRING_APPLICATION_NAME: customer-service
+  SPRING_DATA_MONGODB_AUTHENTICATION_DATABASE: admin
+  SPRING_DATA_MONGODB_DATABASE: customerdb
+  SPRING_DATA_MONGODB_HOST: mongodb-service.cmt-solution.svc.cluster.local
+  SPRING_DATA_MONGODB_PASSWORD: seif
+  SPRING_DATA_MONGODB_PORT: "27017"
+  SPRING_DATA_MONGODB_USERNAME: seif
+kind: ConfigMap
+metadata:
+  labels:
+    service: cmt-ms-customer
+  name: cmt-ms-customer
+  namespace: cmt-solution

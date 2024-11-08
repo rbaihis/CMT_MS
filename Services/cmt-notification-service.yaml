@@ -8,6 +8,8 @@ metadata:
     app.kubernetes.io/part-of: cmt-solution
   labels:
     service: cmt-notification-service
+    job: svc-notification
+    app: cmt-notification-service
   name: cmt-notification-service
   namespace: cmt-solution
 spec:

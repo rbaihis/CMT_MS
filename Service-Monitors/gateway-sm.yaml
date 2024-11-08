@@ -1,0 +1,18 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: cmt-gateway-service-monitor
+  labels:
+    release: prometheus
+spec:
+  jobLabel: job
+  endpoints:
+    - interval: 30s
+      port: "8222"
+      path: /actuator/prometheus
+  namespaceSelector:
+    matchNames:
+      - cmt-solution  # Target namespace where your service is deployed
+  selector:
+    matchLabels:
+      app: cmt-gateway-service  # Matches the app label of the target Service

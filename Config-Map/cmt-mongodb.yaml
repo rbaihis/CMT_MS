@@ -1,0 +1,10 @@
+apiVersion: v1
+data:
+  MONGO_INITDB_ROOT_PASSWORD: seif
+  MONGO_INITDB_ROOT_USERNAME: seif
+kind: ConfigMap
+metadata:
+  labels:
+    service: mongodb-service-cmt
+  name: cmt-mongodb
+  namespace: cmt-solution
