@@ -1,2 +1,0 @@
-KAFKA_BROKERCONNECT=kafka-service:9092
-JVM_OPTS="-Xms32M -Xmx64M"
