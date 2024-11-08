@@ -8,6 +8,8 @@ metadata:
     app.kubernetes.io/part-of: cmt-solution
   labels:
     service: cmt-payment-service
+    job: svc-payment
+    app: cmt-payment-service
   name: cmt-payment-service
   namespace: cmt-solution
 spec:

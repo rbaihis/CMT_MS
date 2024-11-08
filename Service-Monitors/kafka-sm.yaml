@@ -1,18 +1,18 @@
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: cmt-notification-service-monitor
+  name: cmt-kafka-service-monitor
   labels:
     release: prometheus
 spec:
   jobLabel: job
   endpoints:
     - interval: 30s
-      port: "8045" # Matches the port name label of the target Service
-      path: /api/v1/actuator/prometheus
+      port: "9092" # Matches the port name label of the target Service
+#      path: 
   namespaceSelector:
     matchNames:
       - cmt-solution  # Target namespace where your service is deployed
   selector:
     matchLabels:
-      app: cmt-notification-service  # Matches the app label of the target Service
+      app: cmt-kafka-service  # Matches the app label of the target Service
