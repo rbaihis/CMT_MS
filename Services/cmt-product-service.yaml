@@ -8,6 +8,8 @@ metadata:
     app.kubernetes.io/part-of: cmt-solution
   labels:
     service: cmt-product-service
+    job: cmt-product-service
+    app: cmt-product-service
   name: cmt-product-service
   namespace: cmt-solution
 spec:
