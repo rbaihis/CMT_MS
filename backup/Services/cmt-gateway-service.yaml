@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    app.kubernetes.io/component: service
+    app.kubernetes.io/managed-by: kubectl
+    app.kubernetes.io/name: cmt-gateway-service
+    app.kubernetes.io/part-of: cmt-solution
+  labels:
+    service: cmt-gateway-service
+    job: svc-gateway
+    app: cmt-gateway-service
+  name: cmt-gateway-service
+  namespace: cmt-solution
+spec:
+  ports:
+  - name: "8222"
+    nodePort: 31659
+    port: 8222
+    protocol: TCP
+    targetPort: 8222
+  selector:
+    service: cmt-gateway-ms
+  sessionAffinity: None
+  type: LoadBalancer
+status:
+  loadBalancer:
+    ingress:
+    - hostname: af8b5c5e0fffb467da0841ba34bd0c20-680163842.eu-west-2.elb.amazonaws.com

@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    app.kubernetes.io/component: service
+    app.kubernetes.io/managed-by: kubectl
+    app.kubernetes.io/name: cmt-notification-service
+    app.kubernetes.io/part-of: cmt-solution
+  labels:
+    service: cmt-notification-service
+    job: svc-notification
+    app: cmt-notification-service
+  name: cmt-notification-service
+  namespace: cmt-solution
+spec:
+  ipFamilies:
+  - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+  - name: "8045"
+    port: 8045
+    protocol: TCP
+    targetPort: 8045
+  selector:
+    service: cmt-notification-ms
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}

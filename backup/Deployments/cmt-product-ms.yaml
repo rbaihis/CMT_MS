@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    app.kubernetes.io/component: ms
+    app.kubernetes.io/instance: cmt-product-ms
+    app.kubernetes.io/managed-by: kubectl
+    app.kubernetes.io/name: cmt-product-ms
+    app.kubernetes.io/part-of: cmt-solution
+    app.kubernetes.io/version: 1.0.0
+  labels:
+    service: cmt-product-service
+  name: cmt-product-service
+  namespace: cmt-solution
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      service: cmt-product-ms
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        prometheus.io/path: /api/v1/actuator/prometheus
+        prometheus.io/port: "8050"
+        prometheus.io/scrape: "true"
+      creationTimestamp: null
+      labels:
+        service: cmt-product-ms
+    spec:
+      containers:
+      - envFrom:
+        - configMapRef:
+            name: cmt-ms-common
+        - configMapRef:
+            name: cmt-ms-product
+        - configMapRef:
+            name: cmt-ms-login-postgres
+        image: rbaihis/cmt-product-service:1.0.0
+        imagePullPolicy: IfNotPresent
+        name: cmt-product-ms
+        ports:
+        - containerPort: 8050
+          protocol: TCP

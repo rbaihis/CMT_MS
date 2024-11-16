@@ -1,0 +1,28 @@
+---
+    - name: Verify Database Existence in RDS PostgreSQL
+      hosts: localhost
+      gather_facts: no
+      vars:
+        rds_host: "your-rds-endpoint.amazonaws.com"
+        rds_user: "your-username"
+        rds_password: "your-password"
+        rds_port: 5432
+        db_name: "target_database"
+    
+      tasks:
+        - name: Check if the database exists
+          community.postgresql.postgresql_db:
+            name: "{{ db_name }}"
+            state: present
+            login_host: "{{ rds_host }}"
+            login_user: "{{ rds_user }}"
+            login_password: "{{ rds_password }}"
+            port: "{{ rds_port }}"
+          register: db_check
+    
+        - name: Output database existence result
+          debug:
+            msg: >-
+              Database "{{ db_name }}" exists: 
+              {{ db_check.msg if db_check is defined else 'No information' }}
+    

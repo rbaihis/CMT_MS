@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    app.kubernetes.io/component: ms
+    app.kubernetes.io/instance: cmt-gateway-ms
+    app.kubernetes.io/managed-by: kubectl
+    app.kubernetes.io/name: cmt-gateway-ms
+    app.kubernetes.io/part-of: cmt-solution
+    app.kubernetes.io/version: 1.0.0
+  labels:
+    service: cmt-gateway-service
+  name: cmt-gateway-service
+  namespace: cmt-solution
+spec:
+  selector:
+    matchLabels:
+      service: cmt-gateway-ms
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        prometheus.io/path: /actuator/prometheus
+        prometheus.io/port: "8222"
+        prometheus.io/scrape: "true"
+      creationTimestamp: null
+      labels:
+        service: cmt-gateway-ms
+    spec:
+      containers:
+      - envFrom:
+        - configMapRef:
+            name: cmt-ms-common
+        - configMapRef:
+            name: cmt-ms-gateway
+        image: rbaihis/cmt-gateway-service:1.0.0
+        imagePullPolicy: IfNotPresent
+        name: cmt-gateway-ms
+        ports:
+        - containerPort: 8222
+          protocol: TCP

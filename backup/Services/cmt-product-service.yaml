@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    app.kubernetes.io/component: service
+    app.kubernetes.io/managed-by: kubectl
+    app.kubernetes.io/name: cmt-product-service
+    app.kubernetes.io/part-of: cmt-solution
+  labels:
+    service: cmt-product-service
+    job: cmt-product-service
+    app: cmt-product-service
+  name: cmt-product-service
+  namespace: cmt-solution
+spec:
+  ports:
+  - name: "8050"
+    port: 8050
+    protocol: TCP
+    targetPort: 8050
+  selector:
+    service: cmt-product-ms
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}

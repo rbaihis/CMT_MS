@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    app.kubernetes.io/component: ms
+    app.kubernetes.io/instance: cmt-notification-ms
+    app.kubernetes.io/managed-by: kubectl
+    app.kubernetes.io/name: cmt-notification-ms
+    app.kubernetes.io/part-of: cmt-solution
+    app.kubernetes.io/version: 1.0.0
+  labels:
+    service: cmt-notification-service
+  name: cmt-notification-service
+  namespace: cmt-solution
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service: cmt-notification-ms
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        prometheus.io/path: /api/v1/actuator/prometheus
+        prometheus.io/port: "8045"
+        prometheus.io/scrape: "true"
+      creationTimestamp: null
+      labels:
+        service: cmt-notification-ms
+    spec:
+      containers:
+      - envFrom:
+        - configMapRef:
+            name: cmt-ms-common
+        - configMapRef:
+            name: cmt-ms-notification
+        image: rbaihis/cmt-notification-service:1.0.0
+        imagePullPolicy: IfNotPresent
+        name: cmt-notification-ms
+        ports:
+        - containerPort: 8045
+          protocol: TCP
+        
