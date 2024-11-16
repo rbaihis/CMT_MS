@@ -1,0 +1,10 @@
+apiVersion: v1
+data:
+  JVM_OPTS: -Xms32M -Xmx64M
+  KAFKA_BROKERCONNECT: kafka-service.cmt-solution.svc.cluster.local:9092
+kind: ConfigMap
+metadata:
+  labels:
+    service: kafdrop-cmt
+  name: cmt-kafkadrop
+  namespace: cmt-solution

@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  annotations:
+    app.kubernetes.io/component: infra-eventstreaming
+    app.kubernetes.io/instance: cmt-kafka
+    app.kubernetes.io/managed-by: kubectl
+    app.kubernetes.io/name: cmt-kafka
+    app.kubernetes.io/part-of: cmt-solution
+    app.kubernetes.io/version: 7.5.0
+  labels:
+    service: kafka-service
+  name: kafka-service
+  namespace: cmt-solution
+spec:
+  persistentVolumeClaimRetentionPolicy:
+    whenDeleted: Retain
+    whenScaled: Retain
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      service: kafka-service
+  serviceName: ""
+  template:
+    metadata:
+      labels:
+        service: kafka-service
+    spec:
+      containers:
+      - envFrom:
+        - configMapRef:
+            name: cmt-kafka
+        image: confluentinc/cp-kafka:7.5.0
+        imagePullPolicy: IfNotPresent
+        name: kafka-service
+        ports:
+        - containerPort: 9092
+          protocol: TCP
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 10
+  updateStrategy:
+    rollingUpdate:
+      partition: 0
+    type: RollingUpdate
+

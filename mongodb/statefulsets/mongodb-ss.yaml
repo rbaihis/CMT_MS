@@ -1,0 +1,46 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  annotations:
+    app.kubernetes.io/component: infra-nosqlbd
+    app.kubernetes.io/instance: cmt-mongodb
+    app.kubernetes.io/managed-by: kubectl
+    app.kubernetes.io/name: cmt-mongodb
+    app.kubernetes.io/part-of: cmt-solution
+    app.kubernetes.io/version: latest
+  labels:
+    service: mongodb-service
+  name: mongodb-service
+  namespace: cmt-solution
+spec:
+  serviceName: "mongodb-service" # Required field for StatefulSets
+  persistentVolumeClaimRetentionPolicy:
+    whenDeleted: Retain
+    whenScaled: Retain
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      service: mongodb-service
+  template:
+    metadata:
+      labels:
+        service: mongodb-service
+    spec:
+      containers:
+      - name: mongo-db
+        image: mongo
+        imagePullPolicy: Always
+        envFrom:
+        - configMapRef:
+            name: cmt-mongodb
+        ports:
+        - containerPort: 27017
+          protocol: TCP
+        resources: {}
+      terminationGracePeriodSeconds: 7
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      partition: 0
+

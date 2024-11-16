@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    app.kubernetes.io/component: infra-mailsender
+    app.kubernetes.io/managed-by: kubectl
+    app.kubernetes.io/name: cmt-mailsender
+    app.kubernetes.io/part-of: cmt-solution
+    app.kubernetes.io/version: latest
+    deployment.kubernetes.io/revision: "1"
+  labels:
+    service: mail-service
+  name: mail-service
+  namespace: cmt-solution
+spec:
+  selector:
+    matchLabels:
+      service: mail-service
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        service: mail-service
+    spec:
+      containers:
+      - image: mailhog/mailhog:latest
+        imagePullPolicy: Always
+        name: mailhog
+        ports:
+        - containerPort: 1025
+          protocol: TCP
+        - containerPort: 8025
+          protocol: TCP
