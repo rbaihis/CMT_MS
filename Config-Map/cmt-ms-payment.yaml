@@ -6,9 +6,9 @@ data:
   SERVER_SERVLET_CONTEXT_PATH: /api/v1
   SPRING_APPLICATION_NAME: payment-service
   SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
-  SPRING_DATASOURCE_PASSWORD: seif
-  SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-service.cmt-solution.svc.cluster.local:5432/paymentdb
-  SPRING_DATASOURCE_USERNAME: seif
+ # SPRING_DATASOURCE_PASSWORD: seif
+  SPRING_DATASOURCE_URL: jdbc:postgresql://cmt-solution-db.cvmaims48t9o.eu-west-2.rds.amazonaws.com:5432/paymentdb
+ # SPRING_DATASOURCE_USERNAME: seif
   SPRING_JPA_DATABASE: postgresql
   SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.PostgreSQLDialect
   SPRING_JPA_HIBERNATE_DDL_AUTO: create

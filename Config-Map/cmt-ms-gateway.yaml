@@ -28,7 +28,8 @@ data:
   SPRING_CLOUD_GATEWAY_ROUTES_7_URI: http://prometheus-service:9090
   SPRING_CLOUD_GATEWAY_ROUTES_8_ID: grafana
   SPRING_CLOUD_GATEWAY_ROUTES_8_PREDICATES_0: Path=/grafana/**
-  SPRING_CLOUD_GATEWAY_ROUTES_8_URI: http://grafana-service:3000
+  SPRING_CLOUD_GATEWAY_ROUTES_8_URI: http://prometheus-grafana:80
+
 kind: ConfigMap
 metadata:
   labels:

@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  annotations:
+    app.kubernetes.io/component: infra-inmemorydb
+    app.kubernetes.io/instance: cmt-redis
+    app.kubernetes.io/managed-by: kubectl
+    app.kubernetes.io/name: cmt-redis
+    app.kubernetes.io/part-of: cmt-solution
+    app.kubernetes.io/version: latest
+  labels:
+    service: redis-service
+  name: redis-service
+  namespace: cmt-solution
+spec:
+  persistentVolumeClaimRetentionPolicy:
+    whenDeleted: Retain
+    whenScaled: Retain
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      service: redis-service
+  serviceName: ""
+  template:
+    metadata:
+      labels:
+        service: redis-service
+    spec:
+      containers:
+      - args:
+        - redis-server
+        - --appendonly
+        - "yes"
+        - --save
+        - 900 1
+        - --save
+        - 70 10
+        - --save
+        - 60 10000
+        image: redis:latest
+        imagePullPolicy: Always
+        name: redis-service
+        ports:
+        - containerPort: 6379
+          protocol: TCP
+        resources: {}
+      terminationGracePeriodSeconds: 7
+  updateStrategy:
+    rollingUpdate:
+      partition: 0
+    type: RollingUpdate
+
+
+
+
+
+    
