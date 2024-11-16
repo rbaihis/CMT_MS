@@ -1,0 +1,54 @@
+---
+    - name: Deploy Kubernetes Manifests
+      hosts: localhost
+      gather_facts: no
+    
+      vars:
+        k8s_manifest_directories:
+          - kafka
+          - keycloack
+          - mailsender
+          - mongodb
+          - redis
+          - zipkin
+          - zookeeper
+        apply_order: 
+          - zookeeper
+          - kafka
+    
+      tasks:
+        - name: Identify manifest directories
+          set_fact:
+            manifest_dirs: "{{ apply_order + (k8s_manifest_directories | difference(apply_order)) }}"
+    
+        - name: Apply Kubernetes manifests
+          block:
+            - name: Apply manifests for each directory
+              ansible.builtin.command:
+                cmd: "kubectl apply -f {{ item }}/ --recursive"
+              with_items: "{{ manifest_dirs }}"
+              when: item != 'Terra Files'
+              register: k8s_apply_results
+    
+            - name: Wait for all pods to be running
+              command: >
+                sh -c "
+                while [ $(kubectl get pods --all-namespaces | grep -vc Running) -gt 1 ]; do 
+                  sleep 10; 
+                done"
+              async: 600
+              poll: 0
+              changed_when: false
+    
+            - name: Verify all pods are running
+              shell: |
+                if [ $(kubectl get pods --all-namespaces | grep -vc Running) -gt 0 ]; then
+                  echo "Some pods are not running"; exit 1;
+                fi
+              register: pod_status_check
+              failed_when: pod_status_check.rc != 0
+    
+        - name: Debug pod application results
+          debug:
+            msg: "Kubernetes manifests applied and pods verified successfully."
+    
